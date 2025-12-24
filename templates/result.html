@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Page background */
+    body {
+        background: linear-gradient(135deg, #3c0f63, #2a2d7c, #1c1b4a);
+        background-attachment: fixed;
+        color: #f1f1f1;
+    }
+
+    /* Frosted-glass wrapper */
+    .frost-box {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(6px);
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        margin-bottom: 40px;
+        
+    }
+
+    /* Clean section heading */
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 15px;
+        border-left: 5px solid #9f7fff;
+        padding-left: 12px;
+    }
+
+    /* Text blocks */
+    .info-label {
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .info-value {
+        color: #e6e6e6;
+    }
+
+    /* Success alert */
+    .custom-success {
+        background: rgba(212, 255, 212, 0.95);
+        color: #195c19;
+        border-left: 6px solid #1b751b;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 30px;
+    }
+
+    /* Preview images */
+    .clickable-img {
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .clickable-img:hover {
+        transform: scale(1.03);
+    }
+</style>
+
+
+<div class="container py-5">
+
+    <div class="frost-box">
+
+        <!-- HEADER -->
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-white">Certificate Verification Result</h1>
+            <p class="text-light">Secure • Verified • Blockchain Protected</p>
+        </div>
+
+        <!-- SUCCESS MESSAGE -->
+        <div class="custom-success d-flex align-items-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
+                class="bi bi-check-circle-fill me-3">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.07 0l3.992-3.992a.75.75 0 1 0-1.06-1.06L7.5 9.439 5.53 7.47a.75.75 0 0 0-1.06 1.06l2.5 2.5z"/>
+            </svg>
+            <div>
+                <h5 class="fw-bold mb-1">Certificate Verified Successfully</h5>
+                <p class="mb-0">The certificate issued with this registration number is <strong>valid and authentic</strong>.</p>
+            </div>
+        </div>
+
+        <!-- STUDENT INFORMATION -->
+        <h3 class="section-title">Student Information</h3>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><span class="info-label">Name:</span> <span class="info-value">{{ cert.student_name }}</span></p>
+                <p><span class="info-label">Registration Number:</span> <span class="info-value">{{ cert.reg_number }}</span></p>
+                <p><span class="info-label">Department:</span> <span class="info-value">{{ cert.department }}</span></p>
+                <p><span class="info-label">Faculty:</span> <span class="info-value">{{ cert.faculty }}</span></p>
+            </div>
+
+            <div class="col-md-6">
+                <p><span class="info-label">Program:</span> <span class="info-value">{{ cert.program }}</span></p>
+                <p><span class="info-label">Level:</span> <span class="info-value">{{ cert.level }}</span></p>
+                <p><span class="info-label">Graduation Year:</span> <span class="info-value">{{ cert.grad_year }}</span></p>
+                <p><span class="info-label">Issue Date:</span> <span class="info-value">{{ cert.issue_date }}</span></p>
+            </div>
+        </div>
+
+        <hr class="text-light">
+
+        <!-- BLOCKCHAIN DETAILS -->
+        <h3 class="section-title">Blockchain Details</h3>
+
+        <p>
+            <strong class="info-label">Certificate Hash:</strong>
+            <code id="hashText" class="info-value">{{ cert.certificate_hash }}</code>
+        </p>
+
+        <p><strong class="info-label">Blockchain Index:</strong> <span class="info-value">{{ cert.blockchain_index }}</span></p>
+
+        <button class="btn btn-outline-light btn-sm mt-2" onclick="copyHash()">Copy Certificate Hash</button>
+
+        <hr class="my-4 text-light">
+
+        <!-- FILE PREVIEW -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h4 class="section-title">Certificate Preview</h4>
+
+                {% if cert.certificate_file.endswith(".pdf") %}
+                    <a href="/{{ cert.certificate_file }}" class="btn btn-secondary" target="_blank">
+                        Open Certificate PDF
+                    </a>
+                {% else %}
+                    <img src="/{{ cert.certificate_file }}"
+                        class="img-fluid rounded shadow clickable-img"
+                        onclick="openModal('/{{ cert.certificate_file }}')">
+                {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <h4 class="section-title">Passport</h4>
+
+                <img src="/{{ cert.passport_photo }}"
+                    class="img-fluid rounded shadow clickable-img"
+                    style="max-height: 300px; object-fit: cover;"
+                    onclick="openModal('/{{ cert.passport_photo }}')">
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-light px-4">Back to Home</a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- IMAGE MODAL -->
+<div id="imgModal" class="modal" style="
+    display:none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+">
+    <img id="modalImg" style="max-width: 90%; max-height: 90%; border-radius: 15px;">
+</div>
+
+<script>
+function copyHash() {
+    navigator.clipboard.writeText(document.getElementById("hashText").innerText);
+    alert("Certificate hash copied!");
+}
+
+function openModal(src) {
+    document.getElementById("modalImg").src = src;
+    document.getElementById("imgModal").style.display = "flex";
+}
+
+document.getElementById("imgModal").onclick = function () {
+    this.style.display = "none";
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- PAGE TITLE -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-white">Admin Dashboard</h2>
+
+        <a href="/admin/logout" class="btn btn-outline-danger">
+            Logout
+        </a>
+    </div>
+
+    <!-- ACTIONS -->
+    <a href="/admin/upload" class="btn  mb-3 shadow-sm text-white" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">
+        <i class="bi bi-plus text-white"></i> Issue New Certificate
+    </a>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} mt-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <!-- TABLE CARD -->
+    <div class="card shadow-lg border-0 rounded-3">
+
+        <div class="card-header text-white fw-bold py-3" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">
+            Uploaded Certificates
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Reg Number</th>
+                        <th>Student Name</th>
+                        <th>Certificate Hash</th>
+                        <th>Date Issued</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for cert in certificates %}
+                    <tr>
+                        <td class="fw-semibold">{{ cert.reg_number }}</td>
+
+                        <td>{{ cert.student_name }}</td>
+
+                        <td>
+                            <code class="text-purple">
+                                {{ cert.certificate_hash[:18] }}...
+                            </code>
+                        </td>
+
+                        <td>
+                            {{ cert.uploaded_at.strftime('%Y-%m-%d') }}
+                        </td>
+
+                        <td>
+                            <a href="/admin/success/{{ cert.id }}" class="btn btn-sm btn-outline-primary">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if certificates|length == 0 %}
+                <p class="text-muted text-center py-3">
+                    No certificates uploaded yet.
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<style>
+.text-purple {
+    color: #6f42c1;
+}
+table th {
+    font-weight: 600;
+    color: #333;
+}
+table td {
+    font-size: 0.95rem;
+}
+.card-header {
+    font-size: 1.1rem;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .result-header {
+        background: linear-gradient(135deg, #4caf50, #2e7d32);
+        color: white;
+        padding: 18px 25px;
+        border-radius: 10px;
+        font-size: 1.4rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .result-box {
+        padding: 25px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .preview-img {
+        width: 100%;
+        max-height: 350px;
+        object-fit: contain;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .preview-img:hover {
+        transform: scale(1.02);
+    }
+
+    /* MODAL VIEWER */
+    .modal-img {
+        width: 100%;
+        border-radius: 10px;
+    }
+</style>
+
+
+<div class="container mt-5 mb-5">
+
+    <!-- SUCCESS HEADER -->
+    <div class="result-header mb-4">
+        ✔ Certificate Issued Successfully
+    </div>
+
+    <div class="result-box">
+
+        <!-- INFORMATION SECTION -->
+        <p><span class="info-label">Student Name:</span> {{ cert.student_name }}</p>
+        <p><span class="info-label">Registration Number:</span> {{ cert.reg_number }}</p>
+
+        <p>
+            <span class="info-label">Certificate Hash:</span>
+            <code id="hashText">{{ cert.certificate_hash }}</code>
+        </p>
+
+        <p><span class="info-label">Blockchain Index:</span> {{ cert.blockchain_index }}</p>
+        <p><span class="info-label">Issued At:</span> {{ cert.uploaded_at }}</p>
+
+        <hr>
+
+        <!-- CERTIFICATE PREVIEW -->
+        <h5 class="fw-bold mb-2">Certificate Preview</h5>
+
+        {% if cert.certificate_file.endswith(".pdf") %}
+            <a href="/{{ cert.certificate_file }}" target="_blank" class="btn btn-secondary">
+                Open Certificate PDF
+            </a>
+        {% else %}
+            <img src="/{{ cert.certificate_file }}" 
+                 class="preview-img"
+                 onclick="openModal('/{{ cert.certificate_file }}')">
+        {% endif %}
+
+        <hr>
+
+        <!-- PASSPORT PHOTO -->
+        <h5 class="fw-bold mb-2">Passport Photo</h5>
+        <img src="/{{ cert.passport_photo }}" 
+             class="preview-img"
+             style="max-height:200px;"
+             onclick="openModal('/{{ cert.passport_photo }}')">
+
+        <hr>
+
+        <button class="btn btn-primary" onclick="copyHash()">Copy Certificate Hash</button>
+        <a href="/{{ cert.certificate_file }}" download class="btn btn-outline-primary">Download Certificate</a>
+
+        <a href="/admin/dashboard" class="btn btn-success float-end">Back to Dashboard</a>
+
+    </div>
+</div>
+
+
+
+<!-- IMAGE POPUP MODAL -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <img id="modalImage" class="modal-img">
+        </div>
+    </div>
+</div>
+
+
+<script>
+function copyHash() {
+    let text = document.getElementById("hashText").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Hash copied to clipboard!");
+}
+
+function openModal(src) {
+    document.getElementById("modalImage").src = src;
+    let myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+    myModal.show();
+}
+</script>
+
+{% endblock %}

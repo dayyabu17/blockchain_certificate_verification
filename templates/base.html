@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title if title else "Blockchain Certificate Verification System" }}</title>
+
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- BOOTSTRAP ICONS-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* GLOBAL FONT SETTINGS */
+        body, html {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6,
+        .navbar-brand,
+        .nav-link {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+
+            /* Smooth fixed gradient (2-color only) */
+            background: linear-gradient(to bottom, #3F2B96, #A8C0FF);
+            background-attachment: fixed;
+            color: white;
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+            height: 85vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/static/images/hero1.jpg');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.45);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(4px);
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        /* NAVBAR — restored to your original color */
+        nav.navbar {
+            background-image: linear-gradient(to right, rgba(37, 150, 190), rgb(106, 35, 198)) !important;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-link.active {
+            font-weight: bold;
+            color: #fff !important;
+            border-bottom: 2px solid white;
+        }
+
+        /* FOOTER */
+        .footer {
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+            color: #ddd;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="/">BCV System</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link {% if active=='home' %}active{% endif %}" href="/">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if active=='about' %}active{% endif %}" href="/about">About</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if active=='verify' %}active{% endif %}" href="/verify">Verify</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if active=='contact' %}active{% endif %}" href="/contact">Contact</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div>
+    {% block content %}{% endblock %}
+</div>
+
+<!-- FOOTER -->
+<div class="footer text-white">
+    Blockchain Certificate Verification System © {{ current_year }}
+</div>
+
+<!-- BOOTSTRAP JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

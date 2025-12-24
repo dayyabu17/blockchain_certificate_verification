@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- PAGE BACKGROUND -->
+<div class="login-bg d-flex align-items-center justify-content-center">
+
+    <div class="login-card shadow-lg p-4">
+
+        <h3 class="text-center mb-3 fw-bold" style="color: #5a2ea6;">
+            Admin Login
+        </h3>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mt-2">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" name="email" class="form-control form-control-lg rounded-3" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                    <input type="password" id="password" name="password"
+                           class="form-control form-control-lg rounded-3" required>
+                    <button class="btn btn-outline-secondary" type="button"
+                            onclick="togglePassword()">Show</button>
+                </div>
+            </div>
+
+            <button class="btn w-100 mt-3 text-white fw-bold py-2"
+                    style="background: linear-gradient(135deg,#6a11cb,#8e2de2); border-radius: 8px;">
+                Login
+            </button>
+
+            <p class="text-center mt-3">
+                Don't have an account?
+                <a href="/admin/register" style="color: #6a11cb; font-weight: bold;">Create Account</a>
+            </p>
+
+        </form>
+    </div>
+</div>
+
+<!-- STYLE -->
+<style>
+    .login-bg {
+        min-height: 100vh;
+        background: url('/static/images/hero1.jpg') no-repeat center center;
+        background-size: cover;
+        padding: 20px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 430px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<!-- JS: Toggle Password -->
+<script>
+function togglePassword() {
+    let field = document.getElementById("password");
+    field.type = field.type === "password" ? "text" : "password";
+}
+</script>
+
+{% endblock %}

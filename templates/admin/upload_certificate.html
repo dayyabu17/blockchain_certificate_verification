@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+#myform{
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+}
+body {
+        background: linear-gradient(135deg, #3c0f63, #2a2d7c, #1c1b4a);
+        background-attachment: fixed;
+        color: #f1f1f1;
+    }
+    .frost-box {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(6px);
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        margin-bottom: 40px;
+        
+    }
+    .form-control{
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+    .form-control:active{
+        background-color: rgba(255, 255, 255, 0.18);
+    }
+</style>
+<div class="container py-5">
+
+    <div class= "frost-box">
+
+        <h3 class="fw-bold text-white mb-4"> Issue New Certificate</h3>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form action="/admin/upload" method="POST" enctype="multipart/form-data">
+
+            <!-- Student Details -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Student Name</label>
+                    <input type="text" name="student_name" class="form-control" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Registration Number</label>
+                    <input type="text" name="reg_number" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Academic Info -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Department</label>
+                    <input type="text" name="department" class="form-control" required>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Faculty</label>
+                    <input type="text" name="faculty" class="form-control" required>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Program</label>
+                    <input type="text" name="program" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Level & Year -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Level</label>
+                    <input type="text" name="level" class="form-control" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Graduation Year</label>
+                    <input type="number" name="grad_year" class="form-control" required>
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- CERTIFICATE UPLOAD + PREVIEW -->
+            <h5 class="fw-bold mt-3"> Certificate File</h5>
+            <input type="file" name="certificate_file" id="certificateInput" class="form-control" required>
+
+            <!-- Live Preview -->
+            <div id="certificatePreviewContainer" class="mt-3" style="display:none;">
+                <p class="text-muted">Preview:</p>
+                <img id="certificatePreview" class="img-fluid rounded border shadow-sm" style="max-height:300px; display:none;">
+                <a id="certificatePDF" href="#" target="_blank" class="btn btn-outline-primary mt-2" style="display:none;">
+                    Open PDF Preview
+                </a>
+            </div>
+
+            <hr>
+
+            <!-- PASSPORT UPLOAD + PREVIEW -->
+            <h5 class="fw-bold"> Passport Photo</h5>
+            <input type="file" name="passport_photo" id="passportInput" class="form-control" required>
+
+            <div id="passportPreviewContainer" class="mt-3" style="display:none;">
+                <p class="text-muted">Preview:</p>
+                <img id="passportPreview" class="img-thumbnail shadow-sm" style="max-height:150px;">
+            </div>
+
+            <hr>
+
+            <button type="submit" class="btn text-white btn-lg mt-3" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">Upload Certificate</button>
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ======================== -->
+<!--  IMAGE PREVIEW SCRIPT   -->
+<!-- ======================== -->
+
+<script>
+document.getElementById('certificateInput').addEventListener('change', function (event) {
+    let file = event.target.files[0];
+    let previewImg = document.getElementById("certificatePreview");
+    let pdfBtn = document.getElementById("certificatePDF");
+    let container = document.getElementById("certificatePreviewContainer");
+
+    container.style.display = "block";
+
+    if (!file) return;
+
+    let ext = file.name.split('.').pop().toLowerCase();
+
+    if (ext === "pdf") {
+        previewImg.style.display = "none";
+        pdfBtn.style.display = "inline-block";
+
+        let url = URL.createObjectURL(file);
+        pdfBtn.href = url;
+
+    } else {
+        pdfBtn.style.display = "none";
+        previewImg.style.display = "block";
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
+document.getElementById('passportInput').addEventListener('change', function (event) {
+    let file = event.target.files[0];
+    let preview = document.getElementById("passportPreview");
+    let container = document.getElementById("passportPreviewContainer");
+
+    if (!file) return;
+
+    container.style.display = "block";
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        preview.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+});
+</script>
+
+{% endblock %}

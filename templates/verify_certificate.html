@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* Full background gradient */
+    .verify-bg {
+        min-height: 90vh;
+        /* background: linear-gradient(135deg, #6A11CB 0%, #2575FC 100%); */
+        background: url('/static/images/hero1.jpg') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 10px;
+    }
+
+    /* Center card */
+    .verify-card {
+        width: 100%;
+        max-width: 500px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        animation: fadeInUp 0.7s ease;
+    }
+
+    .verify-card h2 {
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #212121;
+    }
+
+    /* Input field */
+    .verify-input {
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 1.1rem;
+        border: 1px solid #ccc;
+    }
+
+    /* Button */
+    .verify-btn {
+        background: linear-gradient(rgba(106, 17, 203, 0.8) 0%, rgba(37, 117, 252, 0.8) 100%);
+        color: white;
+        font-size: 1.1rem;
+        padding: 12px;
+        width: 100%;
+        border-radius: 10px;
+        border: none;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .verify-btn:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<div class="verify-bg">
+
+    <div class="verify-card">
+
+        <h2>Verify Certificate</h2>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <label class="mb-2"><strong>Enter Certificate Hash or Registration Number</strong></label>
+            <input type="text" name="certificate_query" class="form-control verify-input" placeholder="e.g. REG12001 or 7094dfe9..." required>
+
+            <button type="submit" class="verify-btn mt-4">
+                Verify Now
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
