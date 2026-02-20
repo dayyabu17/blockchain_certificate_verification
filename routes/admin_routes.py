@@ -92,7 +92,20 @@ def logout():
 @admin_bp.route("/dashboard")
 @login_required
 def dashboard():
-    certificates = Certificate.query.all()
+    if "school_name" not in session:
+        # Try to recover from DB if admin_id exists
+        if "admin_id" in session:
+            current_admin = Admin.query.get(session["admin_id"])
+            if current_admin:
+                session["school_name"] = current_admin.school_name
+                school_name = current_admin.school_name
+            else:
+                 return redirect(url_for("auth.logout"))
+        else:
+            return redirect(url_for("auth.logout"))
+    else:
+        school_name = session["school_name"]
+    certificates = Certificate.query.filter_by(institution=school_name).all()
     return render_template("admin/dashboard.html", certificates=certificates)
 
 # ------------------------------ UPLOAD CERTIFICATE ------------------------------
@@ -109,11 +122,17 @@ def upload_certificate():
             "department": request.form.get("department"),
             "faculty": request.form.get("faculty"),
             "program": request.form.get("program"),
-            "institution": request.form.get("institution"),
+            "institution": session.get("school_name", "Bayero University Kano"), # Force institution from session
             "level": request.form.get("level"),
             "grad_year": request.form.get("grad_year"),
             "issue_date": issue_date  
-}
+        }
+
+        # Check for duplicate reg_number in the same institution
+        existing_cert = Certificate.query.filter_by(reg_number=student_data["reg_number"], institution=student_data["institution"]).first()
+        if existing_cert:
+            flash("A result with the same reg number has been uploaded", "danger")
+            return redirect(request.url)
 
 
         # Required fields check

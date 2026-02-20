@@ -3,6 +3,7 @@ from models import db
 from routes.admin_routes import admin_bp
 from routes.admin_auth import auth_bp
 from routes.user_routes import user_bp
+from routes.super_admin_routes import super_admin_bp
 import os
 
 app = Flask(__name__)
@@ -27,6 +28,7 @@ db.init_app(app)
 app.register_blueprint(admin_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
+app.register_blueprint(super_admin_bp)
 
 # -----------------------------
 # HOME

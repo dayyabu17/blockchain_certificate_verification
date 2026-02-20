@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- PAGE TITLE -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-white">Super Admin Dashboard</h2>
+
+        <a href="{{ url_for('super_admin.logout') }}" class="btn btn-outline-danger">
+            Logout
+        </a>
+    </div>
+
+    <!-- STATS CARD & ACTION -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm border-0 rounded-3 text-white"
+                style="background: linear-gradient(135deg, #FF512F, #DD2476);">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold">Total Admins</h5>
+                    <p class="display-4 fw-bold mb-0">{{ total_admins }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-center justify-content-end">
+            <a href="{{ url_for('super_admin.add_admin') }}" class="btn btn-lg shadow text-white px-4 py-3 fw-bold"
+                style="background: linear-gradient(135deg,#6a11cb,#8e2de2); border-radius: 10px;">
+                <i class="bi bi-person-plus-fill me-2"></i> Add New Admin
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} mt-2">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+    <!-- ADMINS TABLE -->
+    <div class="card shadow-lg border-0 rounded-3">
+
+        <div class="card-header text-white fw-bold py-3" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">
+            Registered School Admins
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>School Name</th>
+                        <th>Date of Creation</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for admin in admins %}
+                    <tr>
+                        <td class="fw-semibold">{{ admin.id }}</td>
+                        <td>{{ admin.username }}</td>
+                        <td>{{ admin.email }}</td>
+                        <td class="fw-bold text-muted">{{ admin.school_name }}</td>
+                        <td>
+                            {{ admin.created_at.strftime('%Y-%m-%d') }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if admins|length == 0 %}
+            <p class="text-muted text-center py-3">
+                No admins found.
+            </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<!-- STYLE -->
+<style>
+    body {
+        background: url('/static/images/hero1.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    .table th {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .card-header {
+        font-size: 1.1rem;
+    }
+</style>
+
+{% endblock %}

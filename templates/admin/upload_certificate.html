@@ -1,29 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-#myform{
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
-}
-body {
+    #myform {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    body {
         background: linear-gradient(135deg, #3c0f63, #2a2d7c, #1c1b4a);
         background-attachment: fixed;
         color: #f1f1f1;
     }
+
     .frost-box {
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(6px);
         border-radius: 15px;
         padding: 35px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
         margin-bottom: 40px;
         margin-top: 40px;
-        
+
     }
-    .form-control{
+
+    .form-control {
         background-color: rgba(255, 255, 255, 0.08);
     }
-    .form-control:active{
+
+    .form-control:active {
         background-color: rgba(255, 255, 255, 0.18);
     }
 </style>
@@ -36,9 +40,9 @@ body {
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
         {% endif %}
         {% endwith %}
 
@@ -56,7 +60,7 @@ body {
                     <input type="text" name="reg_number" class="form-control" required>
                 </div>
 
-                
+
             </div>
 
             <!-- Academic Info -->
@@ -65,23 +69,24 @@ body {
                     <label class="form-label">Department</label>
                     <input type="text" name="department" class="form-control" required>
                 </div>
-            
+
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Faculty</label>
                     <input type="text" name="faculty" class="form-control" required>
                 </div>
-            
+
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Program</label>
                     <input type="text" name="program" class="form-control" required>
                 </div>
-            
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Institution</label>
-                    <input type="text" name="institution" class="form-control" required>
+                    <input type="text" name="institution" class="form-control"
+                        value="{{ session.get('school_name', '') }}" readonly>
                 </div>
             </div>
-            
+
             <!-- Level & Year -->
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -104,8 +109,10 @@ body {
             <!-- Live Preview -->
             <div id="certificatePreviewContainer" class="mt-3" style="display:none;">
                 <p class="text-muted">Preview:</p>
-                <img id="certificatePreview" class="img-fluid rounded border shadow-sm" style="max-height:300px; display:none;">
-                <a id="certificatePDF" href="#" target="_blank" class="btn btn-outline-primary mt-2" style="display:none;">
+                <img id="certificatePreview" class="img-fluid rounded border shadow-sm"
+                    style="max-height:300px; display:none;">
+                <a id="certificatePDF" href="#" target="_blank" class="btn btn-outline-primary mt-2"
+                    style="display:none;">
                     Open PDF Preview
                 </a>
             </div>
@@ -123,7 +130,8 @@ body {
 
             <hr>
 
-            <button type="submit" class="btn text-white btn-lg mt-3" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">Upload Certificate</button>
+            <button type="submit" class="btn text-white btn-lg mt-3"
+                style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">Upload Certificate</button>
         </form>
 
     </div>
@@ -135,53 +143,53 @@ body {
 <!-- ======================== -->
 
 <script>
-document.getElementById('certificateInput').addEventListener('change', function (event) {
-    let file = event.target.files[0];
-    let previewImg = document.getElementById("certificatePreview");
-    let pdfBtn = document.getElementById("certificatePDF");
-    let container = document.getElementById("certificatePreviewContainer");
+    document.getElementById('certificateInput').addEventListener('change', function (event) {
+        let file = event.target.files[0];
+        let previewImg = document.getElementById("certificatePreview");
+        let pdfBtn = document.getElementById("certificatePDF");
+        let container = document.getElementById("certificatePreviewContainer");
 
-    container.style.display = "block";
+        container.style.display = "block";
 
-    if (!file) return;
+        if (!file) return;
 
-    let ext = file.name.split('.').pop().toLowerCase();
+        let ext = file.name.split('.').pop().toLowerCase();
 
-    if (ext === "pdf") {
-        previewImg.style.display = "none";
-        pdfBtn.style.display = "inline-block";
+        if (ext === "pdf") {
+            previewImg.style.display = "none";
+            pdfBtn.style.display = "inline-block";
 
-        let url = URL.createObjectURL(file);
-        pdfBtn.href = url;
+            let url = URL.createObjectURL(file);
+            pdfBtn.href = url;
 
-    } else {
-        pdfBtn.style.display = "none";
-        previewImg.style.display = "block";
+        } else {
+            pdfBtn.style.display = "none";
+            previewImg.style.display = "block";
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+
+    document.getElementById('passportInput').addEventListener('change', function (event) {
+        let file = event.target.files[0];
+        let preview = document.getElementById("passportPreview");
+        let container = document.getElementById("passportPreviewContainer");
+
+        if (!file) return;
+
+        container.style.display = "block";
 
         let reader = new FileReader();
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
+        reader.onload = function (e) {
+            preview.src = e.target.result;
         };
         reader.readAsDataURL(file);
-    }
-});
-
-
-document.getElementById('passportInput').addEventListener('change', function (event) {
-    let file = event.target.files[0];
-    let preview = document.getElementById("passportPreview");
-    let container = document.getElementById("passportPreviewContainer");
-
-    if (!file) return;
-
-    container.style.display = "block";
-
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        preview.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-});
+    });
 </script>
 
 {% endblock %}

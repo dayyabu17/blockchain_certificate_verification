@@ -7,28 +7,31 @@ from models.admin import Admin
 auth_bp = Blueprint("auth", __name__, url_prefix="/admin")
 
 # --------------------- REGISTER ---------------------
+# --------------------- REGISTER (DISABLED) ---------------------
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        # Check if email exists
-        if Admin.query.filter_by(email=email).first():
-            flash("Email already exists!", "danger")
-            return redirect(request.url)
-
-        admin = Admin(username=name, email=email)
-        admin.set_password(password)
-
-        db.session.add(admin)
-        db.session.commit()
-
-        flash("Account created! Please login.", "success")
-        return redirect(url_for("auth.login"))
-
-    return render_template("admin/register.html")
+    flash("Public registration is disabled. Please contact Super Admin.", "warning")
+    return redirect(url_for("auth.login"))
+    # if request.method == "POST":
+    #     name = request.form.get("name")
+    #     email = request.form.get("email")
+    #     password = request.form.get("password")
+    #
+    #     # Check if email exists
+    #     if Admin.query.filter_by(email=email).first():
+    #         flash("Email already exists!", "danger")
+    #         return redirect(request.url)
+    #
+    #     admin = Admin(username=name, email=email)
+    #     admin.set_password(password)
+    #
+    #     db.session.add(admin)
+    #     db.session.commit()
+    #
+    #     flash("Account created! Please login.", "success")
+    #     return redirect(url_for("auth.login"))
+    #
+    # return render_template("admin/register.html")
 
 
 # --------------------- LOGIN ---------------------
@@ -43,6 +46,8 @@ def login():
         if admin and admin.check_password(password):
             session["admin_id"] = admin.id
             session["admin_name"] = admin.username
+            session["school_name"] = admin.school_name
+            print(f"DEBUG: Login successful for {admin.email}. School: {admin.school_name}, Session School: {session.get('school_name')}")
             flash("Login successful!", "success")
             return redirect(url_for("admin.dashboard"))
 
