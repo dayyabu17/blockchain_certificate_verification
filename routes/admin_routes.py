@@ -188,6 +188,103 @@ def upload_certificate():
 
     return render_template("admin/upload_certificate.html")
 
+
+@admin_bp.route("/edit/<int:cert_id>", methods=["GET", "POST"])
+@login_required
+def edit_certificate(cert_id):
+    cert = Certificate.query.get_or_404(cert_id)
+    school_name = session.get("school_name")
+
+    if cert.institution != school_name:
+        flash("You are not authorized to edit this certificate.", "danger")
+        return redirect(url_for("admin.dashboard"))
+
+    if request.method == "POST":
+        updated_data = {
+            "student_name": request.form.get("student_name"),
+            "reg_number": request.form.get("reg_number"),
+            "department": request.form.get("department"),
+            "faculty": request.form.get("faculty"),
+            "program": request.form.get("program"),
+            "institution": school_name,
+            "level": request.form.get("level"),
+            "grad_year": request.form.get("grad_year"),
+            "issue_date": cert.issue_date,
+        }
+
+        if any(v is None or str(v).strip() == "" for v in updated_data.values()):
+            flash("All fields are required!", "danger")
+            return redirect(request.url)
+
+        duplicate_cert = Certificate.query.filter(
+            Certificate.reg_number == updated_data["reg_number"],
+            Certificate.institution == school_name,
+            Certificate.id != cert.id,
+        ).first()
+
+        if duplicate_cert:
+            flash("Another certificate with this reg number already exists.", "danger")
+            return redirect(request.url)
+
+        cert_file = request.files.get("certificate_file")
+        passport = request.files.get("passport_photo")
+
+        cert_path = cert.certificate_file
+        passport_path = cert.passport_photo
+
+        if cert_file and cert_file.filename:
+            if not allowed_file(cert_file.filename, ALLOWED_CERT_TYPES):
+                flash("Invalid certificate file!", "danger")
+                return redirect(request.url)
+
+            cert_filename = secure_filename(cert_file.filename)
+            cert_path = os.path.join(CERT_UPLOAD_FOLDER, cert_filename)
+            cert_file.save(cert_path)
+
+        if passport and passport.filename:
+            if not allowed_file(passport.filename, ALLOWED_PHOTO_TYPES):
+                flash("Invalid passport photo!", "danger")
+                return redirect(request.url)
+
+            passport_filename = secure_filename(passport.filename)
+            passport_path = os.path.join(PHOTO_UPLOAD_FOLDER, passport_filename)
+            passport.save(passport_path)
+
+        certificate_hash = generate_certificate_hash(cert_path, passport_path, updated_data)
+
+        cert.student_name = updated_data["student_name"]
+        cert.reg_number = updated_data["reg_number"]
+        cert.department = updated_data["department"]
+        cert.faculty = updated_data["faculty"]
+        cert.program = updated_data["program"]
+        cert.level = updated_data["level"]
+        cert.grad_year = updated_data["grad_year"]
+        cert.certificate_file = cert_path
+        cert.passport_photo = passport_path
+        cert.certificate_hash = certificate_hash
+
+        db.session.commit()
+        flash("Certificate updated successfully.", "success")
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template("admin/edit_certificate.html", cert=cert)
+
+
+@admin_bp.route("/delete/<int:cert_id>", methods=["POST"])
+@login_required
+def delete_certificate(cert_id):
+    cert = Certificate.query.get_or_404(cert_id)
+    school_name = session.get("school_name")
+
+    if cert.institution != school_name:
+        flash("You are not authorized to delete this certificate.", "danger")
+        return redirect(url_for("admin.dashboard"))
+
+    db.session.delete(cert)
+    db.session.commit()
+    flash("Certificate deleted successfully.", "success")
+    return redirect(url_for("admin.dashboard"))
+
 # ------------------------------ SUCCESS PAGE ------------------------------
 @admin_bp.route("/success/<int:cert_id>")
 @login_required

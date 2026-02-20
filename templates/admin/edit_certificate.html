@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #3c0f63, #2a2d7c, #1c1b4a);
+        background-attachment: fixed;
+        color: #f1f1f1;
+    }
+
+    .frost-box {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(6px);
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        margin-bottom: 40px;
+        margin-top: 40px;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+</style>
+
+<div class="container py-5 frost-box">
+    <h3 class="fw-bold text-white mb-4">Edit Certificate</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('admin.edit_certificate', cert_id=cert.id) }}" method="POST" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Student Name</label>
+                <input type="text" name="student_name" class="form-control" value="{{ cert.student_name }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Registration Number</label>
+                <input type="text" name="reg_number" class="form-control" value="{{ cert.reg_number }}" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Department</label>
+                <input type="text" name="department" class="form-control" value="{{ cert.department }}" required>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Faculty</label>
+                <input type="text" name="faculty" class="form-control" value="{{ cert.faculty }}" required>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Program</label>
+                <input type="text" name="program" class="form-control" value="{{ cert.program }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Institution</label>
+                <input type="text" class="form-control" value="{{ cert.institution }}" readonly>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Level</label>
+                <input type="text" name="level" class="form-control" value="{{ cert.level }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Graduation Year</label>
+                <input type="number" name="grad_year" class="form-control" value="{{ cert.grad_year }}" required>
+            </div>
+        </div>
+
+        <hr>
+
+        <h5 class="fw-bold mt-3">Replace Certificate File (Optional)</h5>
+        <input type="file" name="certificate_file" class="form-control">
+
+        <h5 class="fw-bold mt-4">Replace Passport Photo (Optional)</h5>
+        <input type="file" name="passport_photo" class="form-control">
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn text-white" style="background: linear-gradient(135deg,#6a11cb,#8e2de2);">
+                Save Changes
+            </button>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-light">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
